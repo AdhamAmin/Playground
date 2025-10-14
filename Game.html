@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr.WEEE's World - Epic Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+        }
+
+        .sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+            opacity: 0.8;
+            animation: float linear infinite;
+        }
+
+        .cloud:before, .cloud:after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+        }
+
+        .cloud1 { width: 100px; height: 40px; top: 20%; left: -100px; animation-duration: 25s; }
+        .cloud1:before { width: 50px; height: 50px; top: -25px; left: 10px; }
+        .cloud1:after { width: 60px; height: 40px; top: -15px; right: 10px; }
+
+        .cloud2 { width: 120px; height: 50px; top: 40%; left: -120px; animation-duration: 35s; animation-delay: 5s; }
+        .cloud2:before { width: 60px; height: 60px; top: -30px; left: 20px; }
+        .cloud2:after { width: 70px; height: 50px; top: -20px; right: 15px; }
+
+        .cloud3 { width: 80px; height: 35px; top: 60%; left: -80px; animation-duration: 30s; animation-delay: 10s; }
+        .cloud3:before { width: 45px; height: 45px; top: -20px; left: 15px; }
+        .cloud3:after { width: 50px; height: 35px; top: -12px; right: 12px; }
+
+        @keyframes float {
+            from { left: -200px; }
+            to { left: 110%; }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loading-title {
+            font-size: 4em;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .loading-bar-container {
+            width: 400px;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid white;
+        }
+
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .language-dropdown {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background: rgba(255,255,255,0.95);
+            border: 3px solid #2c3e50;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 4em;
+            color: #fff;
+            text-shadow: 4px 4px 0 #2c3e50, 6px 6px 10px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .menu-btn {
+            padding: 20px 60px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: 4px solid #2c3e50;
+            border-radius: 50px;
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+        }
+
+        /* Map View */
+        .map-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            border: 4px solid #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .progress-info {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .map-canvas {
+            background: linear-gradient(180deg, #a8edea 0%, #fed6e3 100%);
+            border: 4px solid #2c3e50;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        /* Platformer Game */
+        .platformer-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .platformer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px 15px 0 0;
+            border: 4px solid #2c3e50;
+            border-bottom: none;
+        }
+
+        .platformer-canvas {
+            background: linear-gradient(180deg, #87CEEB 0%, #90EE90 100%);
+            border: 4px solid #2c3e50;
+            border-top: none;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            z-index: 10;
+        }
+
+        /* Battle Screen */
+        .battle-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .battle-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px 15px 0 0;
+            border: 4px solid #2c3e50;
+            border-bottom: none;
+        }
+
+        .health-bar {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .health-label {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .health-bar-bg {
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid #2c3e50;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .player-health { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+        .enemy-health { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+        .battle-canvas {
+            background: linear-gradient(180deg, #434343 0%, #000000 100%);
+            border: 4px solid #2c3e50;
+            border-top: none;
+        }
+
+        .battle-actions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: 3px solid #2c3e50;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attack-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .defend-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Quiz Panel */
+        .quiz-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.98);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #2c3e50;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 600px;
+            display: none;
+            z-index: 100;
+        }
+
+        .quiz-question {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .quiz-answers {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .answer-btn {
+            padding: 15px;
+            font-size: 1.2em;
+            background: #3498db;
+            color: white;
+            border: 3px solid #2980b9;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .answer-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .answer-btn.correct {
+            background: #27ae60;
+            border-color: #229954;
+        }
+
+        .answer-btn.wrong {
+            background: #e74c3c;
+            border-color: #c0392b;
+        }
+
+        /* Race Game */
+        .race-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px 15px 0 0;
+            border: 4px solid #2c3e50;
+            border-bottom: none;
+        }
+
+        .race-canvas {
+            background: #333;
+            border: 4px solid #2c3e50;
+            border-top: none;
+        }
+
+        .leaderboard {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #2c3e50;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .leaderboard h2 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(145deg, #ecf0f1, #bdc3c7);
+            border-radius: 10px;
+            border: 2px solid #95a5a6;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .leaderboard-entry.top1 { background: linear-gradient(145deg, #f1c40f, #f39c12); }
+        .leaderboard-entry.top2 { background: linear-gradient(145deg, #bdc3c7, #95a5a6); }
+        .leaderboard-entry.top3 { background: linear-gradient(145deg, #e67e22, #d35400); }
+
+        .back-btn {
+            padding: 10px 30px;
+            font-size: 1em;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #c0392b;
+        }
+
+        .sound-toggle {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .level-complete {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.98);
+            padding: 50px;
+            border-radius: 20px;
+            border: 4px solid #2c3e50;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            display: none;
+            z-index: 200;
+        }
+
+        .level-complete h2 {
+            font-size: 3em;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .continue-btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .continue-btn:hover {
+            background: #229954;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select class="language-dropdown" id="languageSelect" onchange="changeLanguage()">
+            <option value="en">🇬🇧 English</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="es">🇪🇸 Español</option>
+        </select>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <h1 class="loading-title">🎮 Dr.WEEE's World 🎮</h1>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        <p class="loading-text" id="loadingText">Loading assets... 0%</p>
+    </div>
+
+    <div class="sky">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+    </div>
+
+    <!-- Main Menu -->
+    <div class="container" id="mainMenu" style="display: none;">
+        <h1 class="game-title" data-lang="title">Dr.WEEE's World</h1>
+        <div class="menu">
+            <button class="menu-btn" onclick="showMap()" data-lang="adventureMap">🗺️ Adventure Map</button>
+            <button class="menu-btn" onclick="startRace()" data-lang="raceChallenge">🏎️ Race Challenge</button>
+            <button class="menu-btn" onclick="showLeaderboard()" data-lang="leaderboard">🏆 Leaderboard</button>
+        </div>
+    </div>
+
+    <!-- Map View -->
+    <div class="map-container" id="mapContainer">
+        <div class="map-header">
+            <div class="progress-info">
+                <span data-lang="level">Level</span>: <span id="currentLevel">1</span>/10 | 
+                <span data-lang="mission">Mission</span>: <span id="currentMission">1</span>/10
+            </div>
+            <div>
+                <button class="sound-toggle" onclick="toggleSound()">🔊 <span data-lang="sound">Sound</span>: ON</button>
+                <button class="back-btn" onclick="backToMenu()">← <span data-lang="menu">Menu</span></button>
+            </div>
+        </div>
+        <canvas id="mapCanvas" class="map-canvas" width="1200" height="600"></canvas>
+    </div>
+
+    <!-- Platformer Game -->
+    <div class="platformer-container" id="platformerContainer">
+        <div class="platformer-header">
+            <div class="progress-info"><span data-lang="obstacles">Obstacles</span>: <span id="obstacleProgress">0</span>/5</div>
+            <button class="back-btn" onclick="backToMenu()">← <span data-lang="menu">Menu</span></button>
+        </div>
+        <canvas id="platformerCanvas" class="platformer-canvas" width="1200" height="600"></canvas>
+        <div class="controls-hint" id="controlsHint">
+            ⬅️ ➡️ <span data-lang="move">Move</span> | SPACE <span data-lang="jump">Jump</span> | X <span data-lang="punch">Punch</span>
+        </div>
+    </div>
+
+    <!-- Battle Screen -->
+    <div class="battle-container" id="battleContainer">
+        <div class="battle-header">
+            <div class="health-bar">
+                <div class="health-label" data-lang="heroHP">Hero HP</div>
+                <div class="health-bar-bg">
+                    <div class="health-bar-fill player-health" id="playerHealth" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="health-bar">
+                <div class="health-label" data-lang="monsterHP">Waste Monster HP</div>
+                <div class="health-bar-bg">
+                    <div class="health-bar-fill enemy-health" id="enemyHealth" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <canvas id="battleCanvas" class="battle-canvas" width="1200" height="600"></canvas>
+    </div>
+
+    <!-- Race Game -->
+    <div class="race-container" id="raceContainer">
+        <div class="race-header">
+            <div class="progress-info"><span data-lang="raceProgress">Race Progress</span>: <span id="raceProgress">0</span>/10</div>
+            <button class="back-btn" onclick="backToMenu()">← <span data-lang="menu">Menu</span></button>
+        </div>
+        <canvas id="raceCanvas" class="race-canvas" width="1200" height="600"></canvas>
+    </div>
+
+    <!-- Quiz Panel -->
+    <div class="quiz-panel" id="quizPanel">
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-answers" id="quizAnswers"></div>
+    </div>
+
+    <!-- Level Complete -->
+    <div class="level-complete" id="levelComplete">
+        <h2 data-lang="levelComplete">🎉 Level Complete! 🎉</h2>
+        <p style="font-size: 1.5em; margin: 20px 0;" data-lang="greatJob">Great job defeating all waste monsters!</p>
+        <button class="continue-btn" onclick="nextLevel()" data-lang="continueNext">Continue to Next Level</button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard" id="leaderboard">
+        <h2>🏆 <span data-lang="hallOfHeroes">Hall of Heroes</span> 🏆</h2>
+        <div id="leaderboardEntries"></div>
+        <button class="back-btn" style="margin-top: 30px; display: block; margin-left: auto; margin-right: auto;" onclick="backToMenu()">← <span data-lang="back">Back</span></button>
+    </div>
+
+    <script>
+        // Translations
+        const translations = {
+            en: {
+                title: "Dr.WEEE's World",
+                adventureMap: "🗺️ Adventure Map",
+                raceChallenge: "🏎️ Race Challenge",
+                leaderboard: "🏆 Leaderboard",
+                level: "Level",
+                mission: "Mission",
+                sound: "Sound",
+                menu: "Menu",
+                obstacles: "Obstacles",
+                move: "Move",
+                jump: "Jump",
+                punch: "Punch",
+                heroHP: "Hero HP",
+                monsterHP: "Waste Monster HP",
+                raceProgress: "Race Progress",
+                levelComplete: "🎉 Level Complete! 🎉",
+                greatJob: "Great job defeating all waste monsters!",
+                continueNext: "Continue to Next Level",
+                hallOfHeroes: "Hall of Heroes",
+                back: "Back"
+            },
+            ar: {
+                title: "عالم الدكتور وي",
+                adventureMap: "🗺️ خريطة المغامرة",
+                raceChallenge: "🏎️ تحدي السباق",
+                leaderboard: "🏆 لوحة المتصدرين",
+                level: "مستوى",
+                mission: "مهمة",
+                sound: "الصوت",
+                menu: "القائمة",
+                obstacles: "العقبات",
+                move: "تحرك",
+                jump: "قفز",
+                punch: "لكمة",
+                heroHP: "صحة البطل",
+                monsterHP: "صحة الوحش",
+                raceProgress: "تقدم السباق",
+                levelComplete: "🎉 المستوى مكتمل! 🎉",
+                greatJob: "عمل رائع في هزيمة جميع الوحوش!",
+                continueNext: "الانتقال إلى المستوى التالي",
+                hallOfHeroes: "قاعة الأبطال",
+                back: "عودة"
+            },
+            it: {
+                title: "Il Mondo del Dr.WEEE",
+                adventureMap: "🗺️ Mappa Avventura",
+                raceChallenge: "🏎️ Sfida di Corsa",
+                leaderboard: "🏆 Classifica",
+                level: "Livello",
+                mission: "Missione",
+                sound: "Suono",
+                menu: "Menu",
+                obstacles: "Ostacoli",
+                move: "Muovi",
+                jump: "Salta",
+                punch: "Pugno",
+                heroHP: "Vita Eroe",
+                monsterHP: "Vita Mostro",
+                raceProgress: "Progresso Corsa",
+                levelComplete: "🎉 Livello Completato! 🎉",
+                greatJob: "Ottimo lavoro sconfiggendo tutti i mostri!",
+                continueNext: "Continua al Prossimo Livello",
+                hallOfHeroes: "Sala degli Eroi",
+                back: "Indietro"
+            },
+            es: {
+                title: "El Mundo del Dr.WEEE",
+                adventureMap: "🗺️ Mapa de Aventura",
+                raceChallenge: "🏎️ Desafío de Carrera",
+                leaderboard: "🏆 Tabla de Líderes",
+                level: "Nivel",
+                mission: "Misión",
+                sound: "Sonido",
+                menu: "Menú",
+                obstacles: "Obstáculos",
+                move: "Mover",
+                jump: "Saltar",
+                punch: "Golpear",
+                heroHP: "Vida del Héroe",
+                monsterHP: "Vida del Monstruo",
+                raceProgress: "Progreso de Carrera",
+                levelComplete: "🎉 ¡Nivel Completado! 🎉",
+                greatJob: "¡Gran trabajo derrotando a todos los monstruos!",
+                continueNext: "Continuar al Siguiente Nivel",
+                hallOfHeroes: "Salón de Héroes",
+                back: "Atrás"
+            }
+        };
+
+        let currentLanguage = 'en';
+
+        function changeLanguage() {
+            currentLanguage = document.getElementById('languageSelect').value;
+            updateTranslations();
+        }
+
+        function updateTranslations() {
+            document.querySelectorAll('[data-lang]').forEach(element => {
+                const key = element.getAttribute('data-lang');
+                if (translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+        }
+
+        // Audio System
+        const sounds = {
+            bgm: null,
+            correct: null,
+            wrong: null,
+            attack: null,
+            victory: null,
+            engine: null,
+            jump: null,
+            punch: null
+        };
+        
+        let soundEnabled = true;
+        let audioContext = null;
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                createSounds();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function createSounds() {
+            sounds.correct = () => playTone(800, 0.2, 'sine');
+            sounds.wrong = () => playTone(200, 0.3, 'sawtooth');
+            sounds.attack = () => playTone(400, 0.1, 'square');
+            sounds.victory = () => {
+                playTone(523, 0.2, 'sine');
+                setTimeout(() => playTone(659, 0.2, 'sine'), 200);
+                setTimeout(() => playTone(784, 0.3, 'sine'), 400);
+            };
+            sounds.engine = () => playTone(150, 0.1, 'sawtooth');
+            sounds.jump = () => playTone(600, 0.15, 'sine');
+            sounds.punch = () => playTone(300, 0.1, 'square');
+        }
+
+        function playTone(frequency, duration, type = 'sine') {
+            if (!soundEnabled || !audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.querySelector('.sound-toggle').innerHTML = soundEnabled ? '🔊 <span data-lang="sound">Sound</span>: ON' : '🔇 <span data-lang="sound">Sound</span>: OFF';
+            updateTranslations();
+        }
+
+        // AI Question Generator
+        function generateAIQuestion(level, mission) {
+            const difficulty = Math.min(level + Math.floor(mission / 3), 10);
+            const topics = [
+                { topic: 'math', questions: [
+                    { q: `What is ${5 + difficulty} + ${3 + difficulty}?`, generator: true },
+                    { q: `What is ${10 + difficulty} × ${2 + Math.floor(difficulty/2)}?`, generator: true },
+                    { q: `What is ${50 + difficulty * 5} - ${20 + difficulty * 2}?`, generator: true }
+                ]},
+                { topic: 'environment', questions: [
+                    { q: 'What percentage of plastic waste can be recycled?', a: ['91%', '9%', '50%', '75%'], correct: 1 },
+                    { q: 'Which gas is mainly responsible for global warming?', a: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Helium'], correct: 1 },
+                    { q: 'How long does a plastic bottle take to decompose?', a: ['1 year', '10 years', '100 years', '450 years'], correct: 3 },
+                    { q: 'What is the main source of ocean pollution?', a: ['Ships', 'Plastic waste', 'Oil spills', 'Fish'], correct: 1 },
+                    { q: 'Which energy source is renewable?', a: ['Coal', 'Solar', 'Oil', 'Gas'], correct: 1 }
+                ]},
+                { topic: 'science', questions: [
+                    { q: 'What is the closest planet to the Sun?', a: ['Venus', 'Mercury', 'Earth', 'Mars'], correct: 1 },
+                    { q: 'What is H2O commonly known as?', a: ['Air', 'Water', 'Fire', 'Earth'], correct: 1 },
+                    { q: 'How many bones does an adult human have?', a: ['186', '206', '226', '246'], correct: 1 },
+                    { q: 'What is the speed of light approximately?', a: ['300,000 km/s', '150,000 km/s', '450,000 km/s', '600,000 km/s'], correct: 0 },
+                    { q: 'What organ pumps blood through the body?', a: ['Brain', 'Heart', 'Lungs', 'Liver'], correct: 1 }
+                ]},
+                { topic: 'geography', questions: [
+                    { q: 'What is the largest ocean on Earth?', a: ['Atlantic', 'Pacific', 'Indian', 'Arctic'], correct: 1 },
+                    { q: 'Which continent is the largest?', a: ['Africa', 'Asia', 'Europe', 'America'], correct: 1 },
+                    { q: 'What is the capital of France?', a: ['London', 'Paris', 'Berlin', 'Rome'], correct: 1 },
+                    { q: 'How many continents are there?', a: ['5', '6', '7', '8'], correct: 2 },
+                    { q: 'Which desert is the largest in the world?', a: ['Gobi', 'Sahara', 'Arabian', 'Kalahari'], correct: 1 }
+                ]}
+            ];
+
+            const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
+            const question = selectedTopic.questions[Math.floor(Math.random() * selectedTopic.questions.length)];
+
+            if (question.generator) {
+                // Generate math answers
+                const parts = question.q.match(/(\d+)/g).map(Number);
+                let correctAnswer;
+                if (question.q.includes('+')) {
+                    correctAnswer = parts[0] + parts[1];
+                } else if (question.q.includes('×')) {
+                    correctAnswer = parts[0] * parts[1];
+                } else if (question.q.includes('-')) {
+                    correctAnswer = parts[0] - parts[1];
+                }
+
+                const wrongAnswers = [
+                    correctAnswer + difficulty,
+                    correctAnswer - difficulty,
+                    correctAnswer + difficulty * 2
+                ];
+
+                const allAnswers = [correctAnswer, ...wrongAnswers].map(String);
+                const shuffled = allAnswers.sort(() => Math.random() - 0.5);
+                
+                return {
+                    q: question.q,
+                    a: shuffled,
+                    correct: shuffled.indexOf(String(correctAnswer))
+                };
+            }
+
+            return question;
+        }
+
+        // Game State
+        const gameState = {
+            currentLevel: 1,
+            currentMission: 1,
+            totalScore: 0,
+            levelsData: []
+        };
+
+        for (let i = 1; i <= 10; i++) {
+            const missions = [];
+            for (let j = 1; j <= 10; j++) {
+                missions.push({
+                    completed: false,
+                    x: 100 + (j - 1) * 100,
+                    y: 100 + Math.sin(j) * 50 + (i - 1) * 50
+                });
+            }
+            gameState.levelsData.push({ missions });
+        }
+
+        // Canvas references
+        const mapCanvas = document.getElementById('mapCanvas');
+        const mapCtx = mapCanvas.getContext('2d');
+        const platformerCanvas = document.getElementById('platformerCanvas');
+        const platformerCtx = platformerCanvas.getContext('2d');
+        const battleCanvas = document.getElementById('battleCanvas');
+        const battleCtx = battleCanvas.getContext('2d');
+        const raceCanvas = document.getElementById('raceCanvas');
+        const raceCtx = raceCanvas.getContext('2d');
+
+        // Character position on map
+        const character = {
+            x: 100,
+            y: 100,
+            targetX: 100,
+            targetY: 100,
+            moving: false
+        };
+
+        // Platformer game state
+        const player = {
+            x: 50,
+            y: 400,
+            width: 40,
+            height: 60,
+            velocityY: 0,
+            velocityX: 0,
+            jumping: false,
+            punching: false,
+            facingRight: true
+        };
+
+        let platforms = [];
+        let obstacles = [];
+        let obstaclesDestroyed = 0;
+        let platformerActive = false;
+
+        // Battle state
+        let battleState = {
+            playerHP: 100,
+            enemyHP: 100,
+            playerAttacking: false,
+            enemyAttacking: false,
+            battleActive: false,
+            monsterType: 1
+        };
+
+        // Race state
+        let raceState = {
+            playerPos: 0,
+            aiPos: 0,
+            questionCount: 0,
+            racing: false,
+            roadOffset: 0
+        };
+
+        // Keyboard input
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ' && !player.jumping && platformerActive) {
+                player.velocityY = -18;
+                player.jumping = true;
+                if (soundEnabled) sounds.jump();
+            }
+            if (e.key === 'x' || e.key === 'X') {
+                player.punching = true;
+                if (soundEnabled) sounds.punch();
+                setTimeout(() => player.punching = false, 200);
+            }
+        });
+        document.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        // Loading animation
+        let loadProgress = 0;
+        const loadingInterval = setInterval(() => {
+            loadProgress += 5;
+            document.getElementById('loadingBar').style.width = loadProgress + '%';
+            document.getElementById('loadingText').textContent = `Loading assets... ${loadProgress}%`;
+            
+            if (loadProgress >= 100) {
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                        document.getElementById('mainMenu').style.display = 'flex';
+                        initAudio();
+                    }, 500);
+                }, 500);
+            }
+        }, 50);
+
+        // Map Drawing
+        function drawMap() {
+            mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+            
+            const gradient = mapCtx.createLinearGradient(0, 0, 0, mapCanvas.height);
+            gradient.addColorStop(0, '#a8edea');
+            gradient.addColorStop(1, '#fed6e3');
+            mapCtx.fillStyle = gradient;
+            mapCtx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
+            
+            for (let i = 0; i < 20; i++) {
+                mapCtx.fillStyle = '#27ae60';
+                mapCtx.fillRect(Math.random() * mapCanvas.width, mapCanvas.height - 30, 20, 30);
+            }
+            
+            const currentLevelData = gameState.levelsData[gameState.currentLevel - 1];
+            currentLevelData.missions.forEach((mission, index) => {
+                if (index > 0) {
+                    const prevMission = currentLevelData.missions[index - 1];
+                    mapCtx.strokeStyle = mission.completed ? '#27ae60' : '#bdc3c7';
+                    mapCtx.lineWidth = 4;
+                    mapCtx.beginPath();
+                    mapCtx.moveTo(prevMission.x, prevMission.y);
+                    mapCtx.lineTo(mission.x, mission.y);
+                    mapCtx.stroke();
+                }
+                
+                mapCtx.fillStyle = mission.completed ? '#27ae60' : '#3498db';
+                mapCtx.beginPath();
+                mapCtx.arc(mission.x, mission.y, 25, 0, Math.PI * 2);
+                mapCtx.fill();
+                mapCtx.strokeStyle = '#2c3e50';
+                mapCtx.lineWidth = 3;
+                mapCtx.stroke();
+                
+                mapCtx.fillStyle = 'white';
+                mapCtx.font = 'bold 20px Arial';
+                mapCtx.textAlign = 'center';
+                mapCtx.textBaseline = 'middle';
+                mapCtx.fillText(index + 1, mission.x, mission.y);
+            });
+            
+            mapCtx.fillStyle = '#e74c3c';
+            mapCtx.beginPath();
+            mapCtx.arc(character.x, character.y, 20, 0, Math.PI * 2);
+            mapCtx.fill();
+            mapCtx.fillStyle = '#c0392b';
+            mapCtx.beginPath();
+            mapCtx.arc(character.x, character.y - 5, 8, 0, Math.PI * 2);
+            mapCtx.fill();
+            
+            if (character.moving) {
+                const dx = character.targetX - character.x;
+                const dy = character.targetY - character.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist > 2) {
+                    character.x += (dx / dist) * 3;
+                    character.y += (dy / dist) * 3;
+                } else {
+                    character.x = character.targetX;
+                    character.y = character.targetY;
+                    character.moving = false;
+                    startPlatformer();
+                }
+            }
+            
+            requestAnimationFrame(drawMap);
+        }
+
+        mapCanvas.addEventListener('click', (e) => {
+            const rect = mapCanvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            const currentLevelData = gameState.levelsData[gameState.currentLevel - 1];
+            const mission = currentLevelData.missions[gameState.currentMission - 1];
+            
+            const dist = Math.sqrt((clickX - mission.x) ** 2 + (clickY - mission.y) ** 2);
+            
+            if (dist < 25 && !character.moving) {
+                character.targetX = mission.x;
+                character.targetY = mission.y;
+                character.moving = true;
+            }
+        });
+
+        // Platformer Game
+        function startPlatformer() {
+            const difficulty = gameState.currentLevel + Math.floor(gameState.currentMission / 3);
+            
+            player.x = 50;
+            player.y = 400;
+            player.velocityY = 0;
+            player.velocityX = 0;
+            player.jumping = false;
+            obstaclesDestroyed = 0;
+
+            platforms = [
+                { x: 0, y: 500, width: 400, height: 20 },
+                { x: 500, y: 450, width: 200, height: 20 },
+                { x: 800, y: 400, width: 200, height: 20 },
+                { x: 1100, y: 350, width: 100, height: 20 }
+            ];
+
+            obstacles = [];
+            for (let i = 0; i < 5; i++) {
+                obstacles.push({
+                    x: 300 + i * 200,
+                    y: platforms[Math.floor(i / 2)].y - 60,
+                    width: 40,
+                    height: 40,
+                    destroyed: false,
+                    health: Math.min(2 + Math.floor(difficulty / 2), 5)
+                });
+            }
+
+            document.getElementById('mapContainer').style.display = 'none';
+            document.getElementById('platformerContainer').style.display = 'block';
+            platformerActive = true;
+            platformerLoop();
+        }
+
+        function platformerLoop() {
+            if (!platformerActive) return;
+            
+            platformerCtx.clearRect(0, 0, platformerCanvas.width, platformerCanvas.height);
+            
+            const gradient = platformerCtx.createLinearGradient(0, 0, 0, platformerCanvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#90EE90');
+            platformerCtx.fillStyle = gradient;
+            platformerCtx.fillRect(0, 0, platformerCanvas.width, platformerCanvas.height);
+            
+            // Draw platforms
+            platformerCtx.fillStyle = '#8B4513';
+            platforms.forEach(platform => {
+                platformerCtx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                platformerCtx.fillStyle = '#27ae60';
+                for (let i = 0; i < platform.width; i += 20) {
+                    platformerCtx.fillRect(platform.x + i, platform.y - 5, 15, 5);
+                }
+                platformerCtx.fillStyle = '#8B4513';
+            });
+            
+            // Draw obstacles (waste boxes)
+            obstacles.forEach(obstacle => {
+                if (!obstacle.destroyed) {
+                    platformerCtx.fillStyle = '#95a5a6';
+                    platformerCtx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    platformerCtx.strokeStyle = '#7f8c8d';
+                    platformerCtx.lineWidth = 3;
+                    platformerCtx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    
+                    // Health indicator
+                    platformerCtx.fillStyle = '#e74c3c';
+                    platformerCtx.font = 'bold 16px Arial';
+                    platformerCtx.textAlign = 'center';
+                    platformerCtx.fillText(obstacle.health, obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2 + 5);
+                }
+            });
+            
+            // Player movement
+            if (keys['ArrowLeft']) {
+                player.velocityX = -5;
+                player.facingRight = false;
+            } else if (keys['ArrowRight']) {
+                player.velocityX = 5;
+                player.facingRight = true;
+            } else {
+                player.velocityX = 0;
+            }
+            
+            player.x += player.velocityX;
+            player.velocityY += 0.8;
+            player.y += player.velocityY;
+            
+            // Collision with platforms
+            player.jumping = true;
+            platforms.forEach(platform => {
+                if (player.x + player.width > platform.x &&
+                    player.x < platform.x + platform.width &&
+                    player.y + player.height >= platform.y &&
+                    player.y + player.height <= platform.y + 20 &&
+                    player.velocityY >= 0) {
+                    player.y = platform.y - player.height;
+                    player.velocityY = 0;
+                    player.jumping = false;
+                }
+            });
+            
+            // Check punch collision with obstacles
+            if (player.punching) {
+                obstacles.forEach(obstacle => {
+                    if (!obstacle.destroyed) {
+                        const punchReach = player.facingRight ? player.x + player.width : player.x - 30;
+                        if (Math.abs(punchReach - obstacle.x) < 50 &&
+                            Math.abs(player.y - obstacle.y) < 60) {
+                            obstacle.health--;
+                            if (obstacle.health <= 0) {
+                                obstacle.destroyed = true;
+                                obstaclesDestroyed++;
+                                document.getElementById('obstacleProgress').textContent = obstaclesDestroyed;
+                                if (soundEnabled) sounds.correct();
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Check if all obstacles destroyed
+            if (obstaclesDestroyed >= 5) {
+                platformerActive = false;
+                setTimeout(() => startBattle(), 500);
+            }
+            
+            // Draw player
+            platformerCtx.fillStyle = '#3498db';
+            platformerCtx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Head
+            platformerCtx.fillStyle = '#f39c12';
+            platformerCtx.beginPath();
+            platformerCtx.arc(player.x + player.width / 2, player.y - 10, 15, 0, Math.PI * 2);
+            platformerCtx.fill();
+            
+            // Eyes
+            platformerCtx.fillStyle = '#2c3e50';
+            const eyeOffset = player.facingRight ? 5 : -5;
+            platformerCtx.fillRect(player.x + player.width / 2 - 5 + eyeOffset, player.y - 13, 4, 4);
+            platformerCtx.fillRect(player.x + player.width / 2 + 3 + eyeOffset, player.y - 13, 4, 4);
+            
+            // Punch animation
+            if (player.punching) {
+                platformerCtx.fillStyle = '#e74c3c';
+                const punchX = player.facingRight ? player.x + player.width : player.x - 20;
+                platformerCtx.fillRect(punchX, player.y + 20, 20, 10);
+            }
+            
+            requestAnimationFrame(platformerLoop);
+        }
+
+        // Battle System
+        function startBattle() {
+            const difficulty = gameState.currentLevel + Math.floor(gameState.currentMission / 3);
+            
+            battleState = {
+                playerHP: 100,
+                enemyHP: 50 + difficulty * 10,
+                playerAttacking: false,
+                enemyAttacking: false,
+                battleActive: true,
+                monsterType: (gameState.currentMission % 3) + 1
+            };
+            
+            document.getElementById('playerHealth').style.width = '100%';
+            document.getElementById('enemyHealth').style.width = '100%';
+            document.getElementById('platformerContainer').style.display = 'none';
+            document.getElementById('battleContainer').style.display = 'block';
+            
+            drawBattle();
+            setTimeout(() => showQuestion('battle'), 1000);
+        }
+
+        function drawBattle() {
+            if (!battleState.battleActive) return;
+            
+            battleCtx.clearRect(0, 0, battleCanvas.width, battleCanvas.height);
+            
+            const gradient = battleCtx.createLinearGradient(0, 0, 0, battleCanvas.height);
+            gradient.addColorStop(0, '#434343');
+            gradient.addColorStop(1, '#000000');
+            battleCtx.fillStyle = gradient;
+            battleCtx.fillRect(0, 0, battleCanvas.width, battleCanvas.height);
+            
+            // Ground
+            battleCtx.fillStyle = '#2c3e50';
+            battleCtx.fillRect(0, 450, battleCanvas.width, 150);
+            
+            // Player (Hero)
+            const playerX = 200;
+            const playerY = 350;
+            battleCtx.fillStyle = '#3498db';
+            battleCtx.fillRect(playerX, playerY, 60, 80);
+            battleCtx.fillStyle = '#2980b9';
+            battleCtx.beginPath();
+            battleCtx.arc(playerX + 30, playerY - 20, 30, 0, Math.PI * 2);
+            battleCtx.fill();
+            battleCtx.fillStyle = '#fff';
+            battleCtx.fillRect(playerX + 15, playerY - 25, 10, 10);
+            battleCtx.fillRect(playerX + 35, playerY - 25, 10, 10);
+            
+            if (battleState.playerAttacking) {
+                battleCtx.fillStyle = '#f1c40f';
+                for (let i = 0; i < 3; i++) {
+                    battleCtx.beginPath();
+                    battleCtx.arc(playerX + 80 + i * 30, playerY + 40, 15, 0, Math.PI * 2);
+                    battleCtx.fill();
+                }
+            }
+            
+            // Enemy (Waste Monster) - Different types
+            const enemyX = 900;
+            const enemyY = 300;
+            
+            if (battleState.monsterType === 1) {
+                // Plastic Bottle Monster
+                battleCtx.fillStyle = '#3498db';
+                battleCtx.fillRect(enemyX + 10, enemyY, 60, 100);
+                battleCtx.fillStyle = '#2980b9';
+                battleCtx.fillRect(enemyX + 20, enemyY - 30, 40, 30);
+                battleCtx.fillStyle = '#e74c3c';
+                battleCtx.fillRect(enemyX + 20, enemyY + 20, 15, 15);
+                battleCtx.fillRect(enemyX + 45, enemyY + 20, 15, 15);
+                battleCtx.fillStyle = '#27ae60';
+                battleCtx.fillRect(enemyX, enemyY + 100, 30, 20);
+                battleCtx.fillRect(enemyX + 50, enemyY + 100, 30, 20);
+            } else if (battleState.monsterType === 2) {
+                // Trash Bag Monster
+                battleCtx.fillStyle = '#2c3e50';
+                battleCtx.beginPath();
+                battleCtx.ellipse(enemyX + 40, enemyY + 60, 50, 70, 0, 0, Math.PI * 2);
+                battleCtx.fill();
+                battleCtx.fillStyle = '#e74c3c';
+                battleCtx.fillRect(enemyX + 15, enemyY + 30, 15, 15);
+                battleCtx.fillRect(enemyX + 50, enemyY + 30, 15, 15);
+                battleCtx.fillStyle = '#95a5a6';
+                for (let i = 0; i < 4; i++) {
+                    battleCtx.fillRect(enemyX + 10 + i * 15, enemyY + 80, 10, 30);
+                }
+            } else {
+                // E-Waste Monster
+                battleCtx.fillStyle = '#34495e';
+                battleCtx.fillRect(enemyX, enemyY, 80, 90);
+                battleCtx.fillStyle = '#7f8c8d';
+                battleCtx.fillRect(enemyX + 10, enemyY + 10, 60, 40);
+                battleCtx.fillStyle = '#e74c3c';
+                battleCtx.fillRect(enemyX + 20, enemyY + 20, 15, 15);
+                battleCtx.fillRect(enemyX + 45, enemyY + 20, 15, 15);
+                battleCtx.fillStyle = '#27ae60';
+                for (let i = 0; i < 3; i++) {
+                    battleCtx.fillRect(enemyX + 15 + i * 20, enemyY + 90, 10, 20);
+                }
+            }
+            
+            if (battleState.enemyAttacking) {
+                battleCtx.fillStyle = '#e74c3c';
+                for (let i = 0; i < 3; i++) {
+                    battleCtx.beginPath();
+                    battleCtx.arc(enemyX - 40 - i * 30, enemyY + 50, 15, 0, Math.PI * 2);
+                    battleCtx.fill();
+                }
+            }
+            
+            requestAnimationFrame(drawBattle);
+        }
+
+        function playerAttack(correct) {
+            if (correct) {
+                battleState.playerAttacking = true;
+                if (soundEnabled) sounds.attack();
+                
+                setTimeout(() => {
+                    battleState.enemyHP -= 20;
+                    const enemyHPPercent = (battleState.enemyHP / (50 + (gameState.currentLevel + Math.floor(gameState.currentMission / 3)) * 10)) * 100;
+                    document.getElementById('enemyHealth').style.width = Math.max(0, enemyHPPercent) + '%';
+                    battleState.playerAttacking = false;
+                    
+                    if (battleState.enemyHP <= 0) {
+                        if (soundEnabled) sounds.victory();
+                        battleState.battleActive = false;
+                        completeMission();
+                    } else {
+                        enemyAttack();
+                    }
+                }, 500);
+            } else {
+                enemyAttack();
+            }
+        }
+
+        function enemyAttack() {
+            battleState.enemyAttacking = true;
+            if (soundEnabled) sounds.attack();
+            
+            setTimeout(() => {
+                battleState.playerHP -= 10;
+                document.getElementById('playerHealth').style.width = Math.max(0, battleState.playerHP) + '%';
+                battleState.enemyAttacking = false;
+                
+                if (battleState.playerHP <= 0) {
+                    battleState.battleActive = false;
+                    alert('Game Over! Try again!');
+                    backToMenu();
+                } else {
+                    setTimeout(() => showQuestion('battle'), 1000);
+                }
+            }, 500);
+        }
+
+        function completeMission() {
+            const currentLevelData = gameState.levelsData[gameState.currentLevel - 1];
+            currentLevelData.missions[gameState.currentMission - 1].completed = true;
+            gameState.totalScore += 100;
+            
+            setTimeout(() => {
+                document.getElementById('battleContainer').style.display = 'none';
+                
+                if (gameState.currentMission < 10) {
+                    gameState.currentMission++;
+                    document.getElementById('currentMission').textContent = gameState.currentMission;
+                    const nextMission = currentLevelData.missions[gameState.currentMission - 1];
+                    character.x = nextMission.x - 50;
+                    character.y = nextMission.y;
+                    document.getElementById('mapContainer').style.display = 'block';
+                    drawMap();
+                } else {
+                    showLevelComplete();
+                }
+            }, 1000);
+        }
+
+        function showLevelComplete() {
+            document.getElementById('levelComplete').style.display = 'block';
+        }
+
+        function nextLevel() {
+            document.getElementById('levelComplete').style.display = 'none';
+            
+            if (gameState.currentLevel < 10) {
+                gameState.currentLevel++;
+                gameState.currentMission = 1;
+                document.getElementById('currentLevel').textContent = gameState.currentLevel;
+                document.getElementById('currentMission').textContent = gameState.currentMission;
+                
+                const nextLevelData = gameState.levelsData[gameState.currentLevel - 1];
+                character.x = nextLevelData.missions[0].x - 50;
+                character.y = nextLevelData.missions[0].y;
+                
+                document.getElementById('mapContainer').style.display = 'block';
+                drawMap();
+            } else {
+                alert('Congratulations! You completed all levels!');
+                saveScore();
+                backToMenu();
+            }
+        }
+
+        // Race Game
+        function startRace() {
+            raceState = {
+                playerPos: 0,
+                aiPos: 0,
+                questionCount: 0,
+                racing: true,
+                roadOffset: 0
+            };
+            
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('raceContainer').style.display = 'block';
+            document.getElementById('raceProgress').textContent = 0;
+            
+            drawRace();
+            setTimeout(() => showQuestion('race'), 1000);
+        }
+
+        function drawRace() {
+            if (!raceState.racing) return;
+            
+            raceCtx.clearRect(0, 0, raceCanvas.width, raceCanvas.height);
+            
+            const skyGradient = raceCtx.createLinearGradient(0, 0, 0, 300);
+            skyGradient.addColorStop(0, '#87CEEB');
+            skyGradient.addColorStop(1, '#E0F6FF');
+            raceCtx.fillStyle = skyGradient;
+            raceCtx.fillRect(0, 0, raceCanvas.width, 300);
+            
+            raceCtx.fillStyle = '#34495e';
+            raceCtx.fillRect(0, 300, raceCanvas.width, 300);
+            
+            raceState.roadOffset += 5;
+            if (raceState.roadOffset > 60) raceState.roadOffset = 0;
+            
+            raceCtx.strokeStyle = '#f1c40f';
+            raceCtx.lineWidth = 5;
+            raceCtx.setLineDash([30, 30]);
+            raceCtx.beginPath();
+            raceCtx.moveTo(raceState.roadOffset, 400);
+            raceCtx.lineTo(raceCanvas.width + raceState.roadOffset, 400);
+            raceCtx.moveTo(raceState.roadOffset, 500);
+            raceCtx.lineTo(raceCanvas.width + raceState.roadOffset, 500);
+            raceCtx.stroke();
+            raceCtx.setLineDash([]);
+            
+            raceCtx.fillStyle = '#27ae60';
+            raceCtx.fillRect(0, 300, raceCanvas.width, 20);
+            raceCtx.fillRect(0, 580, raceCanvas.width, 20);
+            
+            const playerX = 150 + raceState.playerPos;
+            const playerY = 350;
+            
+            raceCtx.fillStyle = '#3498db';
+            raceCtx.fillRect(playerX, playerY, 100, 40);
+            raceCtx.beginPath();
+            raceCtx.moveTo(playerX + 30, playerY);
+            raceCtx.lineTo(playerX + 70, playerY);
+            raceCtx.lineTo(playerX + 60, playerY - 20);
+            raceCtx.lineTo(playerX + 40, playerY - 20);
+            raceCtx.closePath();
+            raceCtx.fill();
+            
+            raceCtx.fillStyle = '#2c3e50';
+            raceCtx.fillRect(playerX + 10, playerY + 35, 20, 10);
+            raceCtx.fillRect(playerX + 70, playerY + 35, 20, 10);
+            
+            raceCtx.fillStyle = '#ecf0f1';
+            raceCtx.fillRect(playerX + 35, playerY - 15, 30, 10);
+            
+            raceCtx.fillStyle = '#e74c3c';
+            raceCtx.fillRect(playerX + 95, playerY + 5, 5, 30);
+            
+            const aiX = 150 + raceState.aiPos;
+            const aiY = 470;
+            
+            raceCtx.fillStyle = '#e74c3c';
+            raceCtx.fillRect(aiX, aiY, 100, 40);
+            raceCtx.beginPath();
+            raceCtx.moveTo(aiX + 30, aiY);
+            raceCtx.lineTo(aiX + 70, aiY);
+            raceCtx.lineTo(aiX + 60, aiY - 20);
+            raceCtx.lineTo(aiX + 40, aiY - 20);
+            raceCtx.closePath();
+            raceCtx.fill();
+            
+            raceCtx.fillStyle = '#2c3e50';
+            raceCtx.fillRect(aiX + 10, aiY + 35, 20, 10);
+            raceCtx.fillRect(aiX + 70, aiY + 35, 20, 10);
+            
+            raceCtx.fillStyle = '#ecf0f1';
+            raceCtx.fillRect(aiX + 35, aiY - 15, 30, 10);
+            
+            raceCtx.fillStyle = '#3498db';
+            raceCtx.fillRect(aiX + 95, aiY + 5, 5, 30);
+            
+            if (raceState.questionCount >= 9) {
+                const finishX = 1000;
+                for (let i = 0; i < 15; i++) {
+                    raceCtx.fillStyle = i % 2 === 0 ? '#2c3e50' : '#fff';
+                    raceCtx.fillRect(finishX, 300 + i * 20, 30, 20);
+                }
+            }
+            
+            requestAnimationFrame(drawRace);
+        }
+
+        function raceAnswer(correct) {
+            raceState.questionCount++;
+            document.getElementById('raceProgress').textContent = raceState.questionCount;
+            
+            if (correct) {
+                raceState.playerPos += 80;
+                if (soundEnabled) sounds.engine();
+            } else {
+                raceState.playerPos += 20;
+            }
+            
+            if (Math.random() > 0.3) {
+                raceState.aiPos += 80;
+            } else {
+                raceState.aiPos += 20;
+            }
+            
+            if (raceState.questionCount >= 10) {
+                setTimeout(() => {
+                    raceState.racing = false;
+                    if (raceState.playerPos > raceState.aiPos) {
+                        if (soundEnabled) sounds.victory();
+                        gameState.totalScore += 500;
+                        alert('🏆 You won the race! +500 points!');
+                    } else {
+                        alert('Better luck next time!');
+                    }
+                    saveScore();
+                    backToMenu();
+                }, 1000);
+            } else {
+                setTimeout(() => showQuestion('race'), 1500);
+            }
+        }
+
+        // Question System with AI generation
+        function showQuestion(mode) {
+            const questionData = generateAIQuestion(gameState.currentLevel, gameState.currentMission);
+            
+            // Translate question based on current language
+            let displayQuestion = questionData.q;
+            if (currentLanguage === 'ar') {
+                // Keep English for now, but mark for translation
+                displayQuestion = questionData.q;
+            } else if (currentLanguage === 'it') {
+                displayQuestion = questionData.q;
+            } else if (currentLanguage === 'es') {
+                displayQuestion = questionData.q;
+            }
+            
+            document.getElementById('quizQuestion').textContent = displayQuestion;
+            const answersDiv = document.getElementById('quizAnswers');
+            answersDiv.innerHTML = '';
+            
+            questionData.a.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => handleAnswer(index, questionData.correct, mode);
+                answersDiv.appendChild(btn);
+            });
+            
+            document.getElementById('quizPanel').style.display = 'block';
+        }
+
+        function handleAnswer(selected, correct, mode) {
+            const buttons = document.querySelectorAll('.answer-btn');
+            const isCorrect = selected === correct;
+            
+            buttons[selected].className += isCorrect ? ' correct' : ' wrong';
+            buttons[correct].className += ' correct';
+            
+            if (isCorrect) {
+                if (soundEnabled) sounds.correct();
+            } else {
+                if (soundEnabled) sounds.wrong();
+            }
+            
+            setTimeout(() => {
+                document.getElementById('quizPanel').style.display = 'none';
+                
+                if (mode === 'battle') {
+                    playerAttack(isCorrect);
+                } else if (mode === 'race') {
+                    raceAnswer(isCorrect);
+                }
+            }, 1500);
+        }
+
+        // Leaderboard
+        function saveScore() {
+            const namePrompts = {
+                en: 'Enter your name for the leaderboard:',
+                ar: 'أدخل اسمك للوحة المتصدرين:',
+                it: 'Inserisci il tuo nome per la classifica:',
+                es: 'Ingresa tu nombre para la tabla de clasificación:'
+            };
+            
+            const name = prompt(namePrompts[currentLanguage]) || 'Hero';
+            let leaderboard = JSON.parse(localStorage.getItem('drweee_leaderboard') || '[]');
+            
+            leaderboard.push({ name: name, score: gameState.totalScore });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10);
+            
+            localStorage.setItem('drweee_leaderboard', JSON.stringify(leaderboard));
+        }
+
+        function showLeaderboard() {
+            document.getElementById('mainMenu').style.display = 'none';
+            
+            const leaderboard = JSON.parse(localStorage.getItem('drweee_leaderboard') || '[]');
+            const entriesDiv = document.getElementById('leaderboardEntries');
+            entriesDiv.innerHTML = '';
+            
+            if (leaderboard.length === 0) {
+                const noScoreMessages = {
+                    en: 'No heroes yet! Start your adventure!',
+                    ar: 'لا يوجد أبطال بعد! ابدأ مغامرتك!',
+                    it: 'Nessun eroe ancora! Inizia la tua avventura!',
+                    es: '¡No hay héroes todavía! ¡Comienza tu aventura!'
+                };
+                entriesDiv.innerHTML = `<p style="text-align: center; font-size: 1.5em; color: #7f8c8d;">${noScoreMessages[currentLanguage]}</p>`;
+            } else {
+                leaderboard.forEach((entry, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'leaderboard-entry';
+                    if (index === 0) div.className += ' top1';
+                    else if (index === 1) div.className += ' top2';
+                    else if (index === 2) div.className += ' top3';
+                    
+                    const medal = index === 0 ? '🥇 ' : index === 1 ? '🥈 ' : index === 2 ? '🥉 ' : `${index + 1}. `;
+                    
+                    div.innerHTML = `
+                        <span class="entry-name" style="color: #2c3e50;">${medal}${entry.name}</span>
+                        <span class="entry-score" style="color: #27ae60;">${entry.score} pts</span>
+                    `;
+                    entriesDiv.appendChild(div);
+                });
+            }
+            
+            document.getElementById('leaderboard').style.display = 'block';
+        }
+
+        // Navigation
+        function showMap() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('mapContainer').style.display = 'block';
+            drawMap();
+        }
+
+        function backToMenu() {
+            document.getElementById('mapContainer').style.display = 'none';
+            document.getElementById('platformerContainer').style.display = 'none';
+            document.getElementById('battleContainer').style.display = 'none';
+            document.getElementById('raceContainer').style.display = 'none';
+            document.getElementById('leaderboard').style.display = 'none';
+            document.getElementById('quizPanel').style.display = 'none';
+            document.getElementById('levelComplete').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'flex';
+            
+            platformerActive = false;
+            battleState.battleActive = false;
+            raceState.racing = false;
+        }
+    </script>
+</body>
+</html>
